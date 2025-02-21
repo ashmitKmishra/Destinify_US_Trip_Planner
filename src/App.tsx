@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
+import CustomPrompt from "./pages/CustomPrompt";
+import PlanByFilters from "./pages/PlanByFilters";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,6 +21,8 @@ const App = () => (
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/custom-prompt" element={<CustomPrompt />} />
+            <Route path="/plan-by-filters" element={<PlanByFilters />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>

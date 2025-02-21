@@ -1,9 +1,36 @@
 
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 
+const destinationCards = [
+  {
+    title: "Yellowstone National Park",
+    location: "Wyoming",
+    image: "https://images.unsplash.com/photo-1472396961693-142e6e269027",
+    mood: "Adventurous",
+    description: "Geothermal wonders and wildlife encounters",
+  },
+  {
+    title: "Miami Beach",
+    location: "Florida",
+    image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21",
+    mood: "Energetic",
+    description: "Vibrant culture and beautiful beaches",
+  },
+  {
+    title: "Rocky Mountains",
+    location: "Colorado",
+    image: "https://images.unsplash.com/photo-1458668383970-8ddd3927deed",
+    mood: "Relaxed",
+    description: "Scenic mountain vistas and outdoor activities",
+  },
+];
+
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-muted">
       <Navbar />
@@ -27,10 +54,19 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-              <Button size="lg" className="bg-accent hover:bg-accent/90 text-white">
+              <Button 
+                size="lg" 
+                className="bg-accent hover:bg-accent/90 text-white"
+                onClick={() => navigate("/plan-by-filters")}
+              >
                 Plan by Filters
               </Button>
-              <Button size="lg" variant="outline" className="glass-card">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="glass-card"
+                onClick={() => navigate("/custom-prompt")}
+              >
                 Enter Custom Prompt
               </Button>
             </div>
@@ -63,6 +99,42 @@ const Index = () => {
               </p>
             </div>
           </motion.div>
+
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="mt-24"
+          >
+            <h2 className="text-3xl font-display font-bold text-center mb-12">
+              Popular Destinations
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {destinationCards.map((destination, index) => (
+                <motion.div
+                  key={destination.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 * index }}
+                  className="glass-card rounded-xl overflow-hidden hover:scale-105 transition-transform duration-300"
+                >
+                  <img
+                    src={destination.image}
+                    alt={destination.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-6">
+                    <h3 className="text-xl font-display font-bold">{destination.title}</h3>
+                    <p className="text-sm text-accent mb-2">{destination.location}</p>
+                    <p className="text-muted-foreground mb-4">{destination.description}</p>
+                    <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-sm">
+                      {destination.mood} Vibe
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
         </div>
       </main>
     </div>

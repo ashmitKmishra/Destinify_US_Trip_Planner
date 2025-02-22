@@ -26,6 +26,27 @@ const destinationCards = [
     mood: "Relaxed",
     description: "Scenic mountain vistas and outdoor activities",
   },
+  {
+    title: "New York City",
+    location: "New York",
+    image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9",
+    mood: "Cultural",
+    description: "Urban adventures and cultural experiences",
+  },
+  {
+    title: "Napa Valley",
+    location: "California",
+    image: "https://images.unsplash.com/photo-1519072812063-9f6e8fef2c2b",
+    mood: "Luxurious",
+    description: "Wine country luxury and culinary delights",
+  },
+  {
+    title: "Maui",
+    location: "Hawaii",
+    image: "https://images.unsplash.com/photo-1542259009477-d625272157b7",
+    mood: "Romantic",
+    description: "Tropical paradise and beachside romance",
+  }
 ];
 
 const Index = () => {
@@ -127,9 +148,12 @@ const Index = () => {
                     <h3 className="text-xl font-display font-bold">{destination.title}</h3>
                     <p className="text-sm text-accent mb-2">{destination.location}</p>
                     <p className="text-muted-foreground mb-4">{destination.description}</p>
-                    <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-sm">
-                      {destination.mood} Vibe
-                    </span>
+                    <Button 
+                      className="w-full bg-accent hover:bg-accent/90"
+                      onClick={() => navigate("/plan-by-filters")}
+                    >
+                      Plan Your Next Trip
+                    </Button>
                   </div>
                 </motion.div>
               ))}

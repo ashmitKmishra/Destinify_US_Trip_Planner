@@ -23,7 +23,7 @@ const Navbar = () => {
           <Button variant="link">Browse</Button>
           <Button variant="link">Plan Trip</Button>
           <Button variant="link">About</Button>
-          <Button className="bg-accent hover:bg-accent/90">Get Started</Button>
+          <Button className="bg-accent hover:bg-accent/90">Sign up/Sign in</Button>
         </div>
         
         <Button className="md:hidden" variant="ghost" size="icon">

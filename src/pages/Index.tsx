@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -127,16 +126,26 @@ const Index = () => {
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
-            className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+            className="mt-16 mb-24 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
           >
             {["Personalized Itineraries", "Smart Budgeting", "Local Insights"].map((title, index) => (
               <motion.div
                 key={title}
                 variants={fadeInUp}
-                className="glass-card rounded-xl p-6 text-center transform hover:scale-105 transition-all duration-300 hover:bg-white/40"
+                whileHover={{ 
+                  scale: 1.05,
+                  y: -10,
+                  backgroundColor: "rgba(255, 255, 255, 0.3)",
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20
+                }}
+                className="glass-card rounded-xl p-8 text-center transform cursor-pointer"
               >
-                <h3 className="text-xl font-display mb-2">{title}</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-2xl font-display mb-4 text-foreground">{title}</h3>
+                <p className="text-muted-foreground text-lg">
                   {index === 0 && "Tailored travel plans based on your preferences and interests"}
                   {index === 1 && "Get accurate cost estimates for your entire journey"}
                   {index === 2 && "Discover hidden gems and authentic experiences"}

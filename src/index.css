@@ -47,7 +47,7 @@
 }
 
 .glass-card {
-  @apply backdrop-blur-md bg-white/30 shadow-lg border border-white/20;
+  @apply backdrop-blur-md bg-white/20 shadow-lg border border-white/20 hover:border-white/40 transition-all duration-300;
 }
 
 .nav-blur {

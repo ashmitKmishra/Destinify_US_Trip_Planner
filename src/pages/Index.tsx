@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -35,7 +36,7 @@ const destinationCards = [
   {
     title: "Napa Valley",
     location: "California",
-    image: "https://images.unsplash.com/photo-1519072812063-9f6e8fef2c2b",
+    image: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07",
     mood: "Luxurious",
     description: "Wine country luxury and culinary delights",
   },

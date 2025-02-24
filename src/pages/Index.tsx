@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { WorldMap } from "@/components/ui/world-map";
 
 const destinationCards = [
   {
@@ -67,12 +66,12 @@ const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-[url('https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?auto=format&fit=crop&w=2000&q=80')] bg-fixed bg-cover bg-center before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-b before:from-primary/80 before:to-muted/90 before:backdrop-blur-sm">
       <Navbar />
       
       <main className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto space-y-8">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -84,68 +83,43 @@ const Index = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
-                className="text-accent ml-2"
-              >USA Adventure</motion.span>
+                className="text-accent inline-block"
+              > USA Adventure</motion.span>
             </motion.h1>
             
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1 }}
-              className="text-lg md:text-xl text-muted-foreground mt-6"
+              className="text-lg md:text-xl text-muted-foreground"
             >
               Personalized travel experiences tailored to your mood, style, and dreams.
               Let's create your ideal journey across America.
             </motion.p>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center pt-8"
+            >
+              <Button 
+                size="lg" 
+                className="bg-accent hover:bg-accent/90 text-white transform hover:scale-105 transition-all duration-300"
+                onClick={() => navigate("/plan-by-filters")}
+              >
+                Plan by Filters
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="glass-card hover:bg-white/30 transform hover:scale-105 transition-all duration-300"
+                onClick={() => navigate("/custom-prompt")}
+              >
+                Enter Custom Prompt
+              </Button>
+            </motion.div>
           </div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 1.2 }}
-            className="mb-16"
-          >
-            <WorldMap
-              dots={[
-                {
-                  start: { lat: 40.7128, lng: -74.0060 }, // New York
-                  end: { lat: 34.0522, lng: -118.2437 }, // Los Angeles
-                },
-                {
-                  start: { lat: 47.6062, lng: -122.3321 }, // Seattle
-                  end: { lat: 25.7617, lng: -80.1918 }, // Miami
-                },
-                {
-                  start: { lat: 41.8781, lng: -87.6298 }, // Chicago
-                  end: { lat: 29.7604, lng: -95.3698 }, // Houston
-                },
-              ]}
-              lineColor="#E2725B"
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-24"
-          >
-            <Button 
-              size="lg" 
-              className="bg-accent hover:bg-accent/90 text-white transform hover:scale-105 transition-all duration-300"
-              onClick={() => navigate("/plan-by-filters")}
-            >
-              Plan by Filters
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="glass-card hover:bg-white/30 transform hover:scale-105 transition-all duration-300"
-              onClick={() => navigate("/custom-prompt")}
-            >
-              Enter Custom Prompt
-            </Button>
-          </motion.div>
 
           <motion.div
             variants={staggerContainer}

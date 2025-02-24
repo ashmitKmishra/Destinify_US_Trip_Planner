@@ -2,43 +2,82 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
 const destinationCards = [{
   title: "Yellowstone National Park",
   location: "Wyoming",
-  image: "https://images.unsplash.com/photo-1472396961693-142e6e269027",
+  images: [
+    "https://images.unsplash.com/photo-1472396961693-142e6e269027",
+    "https://images.unsplash.com/photo-1576006445381-c11ed11a9324",
+    "https://images.unsplash.com/photo-1575321539738-048766e46c4f",
+    "https://images.unsplash.com/photo-1576180616247-f5cf552389b3"
+  ],
   mood: "Adventurous",
   description: "Geothermal wonders and wildlife encounters"
 }, {
   title: "Miami Beach",
   location: "Florida",
-  image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21",
+  images: [
+    "https://images.unsplash.com/photo-1500375592092-40eb2168fd21",
+    "https://images.unsplash.com/photo-1535498730771-e735b998cd64",
+    "https://images.unsplash.com/photo-1533106497176-45ae19e68ba2",
+    "https://images.unsplash.com/photo-1603888613934-ee2f7d143dd0"
+  ],
   mood: "Energetic",
   description: "Vibrant culture and beautiful beaches"
 }, {
   title: "Rocky Mountains",
   location: "Colorado",
-  image: "https://images.unsplash.com/photo-1458668383970-8ddd3927deed",
+  images: [
+    "https://images.unsplash.com/photo-1458668383970-8ddd3927deed",
+    "https://images.unsplash.com/photo-1508923567004-3a6b8004f3d7",
+    "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800",
+    "https://images.unsplash.com/photo-1508739773434-c26b3d09e071"
+  ],
   mood: "Relaxed",
   description: "Scenic mountain vistas and outdoor activities"
 }, {
   title: "New York City",
   location: "New York",
-  image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9",
+  images: [
+    "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9",
+    "https://images.unsplash.com/photo-1522083165195-3424ed129620",
+    "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee",
+    "https://images.unsplash.com/photo-1500916434205-0c77489c6cf7"
+  ],
   mood: "Cultural",
   description: "Urban adventures and cultural experiences"
 }, {
   title: "Napa Valley",
   location: "California",
-  image: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07",
+  images: [
+    "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07",
+    "https://images.unsplash.com/photo-1541971740285-39bca3874452",
+    "https://images.unsplash.com/photo-1507434745378-349e95a40935",
+    "https://images.unsplash.com/photo-1592845994419-1b1b37e5af8a"
+  ],
   mood: "Luxurious",
   description: "Wine country luxury and culinary delights"
 }, {
   title: "Maui",
   location: "Hawaii",
-  image: "https://images.unsplash.com/photo-1542259009477-d625272157b7",
+  images: [
+    "https://images.unsplash.com/photo-1542259009477-d625272157b7",
+    "https://images.unsplash.com/photo-1542261777448-23d2a287091c",
+    "https://images.unsplash.com/photo-1598135753163-6167c1a1ad65",
+    "https://images.unsplash.com/photo-1483168534941-c6331758e92d"
+  ],
   mood: "Romantic",
   description: "Tropical paradise and beachside romance"
 }];
+
 const fadeInUp = {
   initial: {
     opacity: 0,
@@ -52,6 +91,7 @@ const fadeInUp = {
     duration: 0.6
   }
 };
+
 const staggerContainer = {
   animate: {
     transition: {
@@ -59,9 +99,12 @@ const staggerContainer = {
     }
   }
 };
+
 const Index = () => {
   const navigate = useNavigate();
-  return <div className="min-h-screen bg-[url('https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?auto=format&fit=crop&w=2000&q=80')] bg-fixed bg-cover bg-center before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-b before:from-primary/80 before:to-muted/90 before:backdrop-blur-sm">
+
+  return (
+    <div className="min-h-screen bg-[url('https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?auto=format&fit=crop&w=2000&q=80')] bg-fixed bg-cover bg-center before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-b before:from-primary/80 before:to-muted/90 before:backdrop-blur-sm">
       <Navbar />
       
       <main className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8">
@@ -149,15 +192,24 @@ const Index = () => {
               Popular Destinations
             </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {destinationCards.map((destination, index) => <motion.div key={destination.title} variants={fadeInUp} className="glass-card rounded-xl overflow-hidden transform hover:scale-105 transition-all duration-500 hover:shadow-2xl">
+              {destinationCards.map((destination, index) => (
+                <motion.div key={destination.title} variants={fadeInUp} className="glass-card rounded-xl overflow-hidden transform hover:scale-105 transition-all duration-500 hover:shadow-2xl">
                   <div className="relative h-48 overflow-hidden">
-                    <motion.img initial={{
-                  scale: 1.2
-                }} whileHover={{
-                  scale: 1
-                }} transition={{
-                  duration: 0.8
-                }} src={destination.image} alt={destination.title} className="w-full h-full object-cover" />
+                    <Carousel className="w-full">
+                      <CarouselContent>
+                        {destination.images.map((image, imageIndex) => (
+                          <CarouselItem key={imageIndex}>
+                            <img 
+                              src={image} 
+                              alt={`${destination.title} view ${imageIndex + 1}`}
+                              className="w-full h-48 object-cover"
+                            />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
+                      <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
+                    </Carousel>
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-display font-bold">{destination.title}</h3>
@@ -167,11 +219,14 @@ const Index = () => {
                       Plan Your Next Trip
                     </Button>
                   </div>
-                </motion.div>)}
+                </motion.div>
+              ))}
             </div>
           </motion.section>
         </div>
       </main>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;

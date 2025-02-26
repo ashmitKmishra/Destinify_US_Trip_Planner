@@ -61,6 +61,11 @@ export async function generateTripSuggestions(filters: {
     });
 
     const openAIData = await openAIResponse.json();
+    
+    if (openAIData.error) {
+      throw new Error(openAIData.error.message || 'OpenAI API error');
+    }
+
     const suggestions = JSON.parse(openAIData.choices[0].message.content);
 
     // Add images to each suggestion using Pexels
@@ -113,6 +118,11 @@ export async function generateCustomTrip(prompt: string): Promise<TripResponse> 
     });
 
     const openAIData = await openAIResponse.json();
+    
+    if (openAIData.error) {
+      throw new Error(openAIData.error.message || 'OpenAI API error');
+    }
+
     const tripPlan = JSON.parse(openAIData.choices[0].message.content);
 
     // Add images using Pexels
@@ -129,7 +139,6 @@ export async function generateCustomTrip(prompt: string): Promise<TripResponse> 
   }
 }
 
-// Add a function to set the OpenAI API key
 export function setOpenAIKey(key: string): void {
   localStorage.setItem('openai_api_key', key);
 }

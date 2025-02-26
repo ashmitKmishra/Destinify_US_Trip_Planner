@@ -46,7 +46,7 @@ export async function generateTripSuggestions(filters: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-3.5-turbo',
         messages: [
           {
             role: 'system',
@@ -63,7 +63,14 @@ export async function generateTripSuggestions(filters: {
     const openAIData = await openAIResponse.json();
     
     if (openAIData.error) {
+      if (openAIData.error.code === 'insufficient_quota') {
+        throw new Error('Your OpenAI API key has exceeded its quota. Please check your billing details or try a different API key.');
+      }
       throw new Error(openAIData.error.message || 'OpenAI API error');
+    }
+
+    if (!openAIData.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response from OpenAI API');
     }
 
     const suggestions = JSON.parse(openAIData.choices[0].message.content);
@@ -77,11 +84,11 @@ export async function generateTripSuggestions(filters: {
     );
 
     return { suggestions: suggestionsWithImages };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error:', error);
     return { 
       suggestions: [], 
-      error: 'Failed to generate trip suggestions. Please check your OpenAI API key.' 
+      error: error.message || 'Failed to generate trip suggestions. Please check your OpenAI API key.' 
     };
   }
 }
@@ -103,7 +110,7 @@ export async function generateCustomTrip(prompt: string): Promise<TripResponse> 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-3.5-turbo',
         messages: [
           {
             role: 'system',
@@ -120,7 +127,14 @@ export async function generateCustomTrip(prompt: string): Promise<TripResponse> 
     const openAIData = await openAIResponse.json();
     
     if (openAIData.error) {
+      if (openAIData.error.code === 'insufficient_quota') {
+        throw new Error('Your OpenAI API key has exceeded its quota. Please check your billing details or try a different API key.');
+      }
       throw new Error(openAIData.error.message || 'OpenAI API error');
+    }
+
+    if (!openAIData.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response from OpenAI API');
     }
 
     const tripPlan = JSON.parse(openAIData.choices[0].message.content);
@@ -130,11 +144,11 @@ export async function generateCustomTrip(prompt: string): Promise<TripResponse> 
     const suggestionWithImages = { ...tripPlan, images };
 
     return { suggestions: [suggestionWithImages] };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error:', error);
     return { 
       suggestions: [], 
-      error: 'Failed to generate custom trip plan. Please check your OpenAI API key.' 
+      error: error.message || 'Failed to generate custom trip plan. Please check your OpenAI API key.' 
     };
   }
 }

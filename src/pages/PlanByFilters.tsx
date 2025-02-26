@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { generateTripSuggestions } from "@/lib/api";
 import type { TripSuggestion } from "@/types/trip";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { ApiKeyModal } from "@/components/ApiKeyModal";
 
 const moodOptions = [
   { id: "adventurous", label: "Adventurous", icon: "🏃‍♂️" },
@@ -46,6 +47,7 @@ const PlanByFilters = () => {
   const [budget, setBudget] = useState([2000]);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<TripSuggestion[]>([]);
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
 
   const handleGenerateItinerary = async () => {
     if (!selectedMood || !placeType) {
@@ -54,6 +56,11 @@ const PlanByFilters = () => {
         description: "Please select both a mood and place type before generating an itinerary.",
         variant: "destructive",
       });
+      return;
+    }
+
+    if (!localStorage.getItem('openai_api_key')) {
+      setShowApiKeyModal(true);
       return;
     }
 
@@ -255,6 +262,10 @@ const PlanByFilters = () => {
           )}
         </motion.div>
       </main>
+      <ApiKeyModal 
+        open={showApiKeyModal} 
+        onClose={() => setShowApiKeyModal(false)} 
+      />
     </div>
   );
 };

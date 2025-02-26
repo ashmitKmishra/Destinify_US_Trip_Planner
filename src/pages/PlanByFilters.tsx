@@ -1,11 +1,15 @@
-
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { generateTripSuggestions } from "@/lib/api";
+import type { TripSuggestion } from "@/types/trip";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const moodOptions = [
   { id: "adventurous", label: "Adventurous", icon: "🏃‍♂️" },
@@ -34,15 +38,54 @@ const placeTypes = [
 ];
 
 const PlanByFilters = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedMood, setSelectedMood] = useState("");
   const [numberOfPeople, setNumberOfPeople] = useState("1");
   const [placeType, setPlaceType] = useState("");
   const [budget, setBudget] = useState([2000]);
+  const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<TripSuggestion[]>([]);
+
+  const handleGenerateItinerary = async () => {
+    if (!selectedMood || !placeType) {
+      toast({
+        title: "Missing Information",
+        description: "Please select both a mood and place type before generating an itinerary.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await generateTripSuggestions({
+        mood: selectedMood,
+        numberOfPeople: parseInt(numberOfPeople),
+        placeType,
+        budget: budget[0],
+      });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      setSuggestions(response.suggestions);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate trip suggestions. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary to-muted">
       <Navbar />
-      <main className="container mx-auto pt-24 px-4">
+      <main className="container mx-auto pt-24 px-4 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -132,10 +175,84 @@ const PlanByFilters = () => {
               />
             </div>
             
-            <Button size="lg" className="w-full bg-accent hover:bg-accent/90 p-6 text-lg">
-              Generate Itinerary
+            <Button 
+              size="lg" 
+              className="w-full bg-accent hover:bg-accent/90 p-6 text-lg"
+              onClick={handleGenerateItinerary}
+              disabled={loading}
+            >
+              {loading ? "Generating..." : "Generate Itinerary"}
             </Button>
           </motion.div>
+
+          {suggestions.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-8"
+            >
+              <h2 className="text-2xl font-display font-bold text-center">
+                Your Personalized Trip Suggestions
+              </h2>
+              
+              <div className="grid gap-6">
+                {suggestions.map((suggestion, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="glass-card p-6 rounded-xl"
+                  >
+                    <div className="relative h-64 mb-4 rounded-lg overflow-hidden">
+                      <Carousel>
+                        <CarouselContent>
+                          {suggestion.images.map((image, imgIndex) => (
+                            <CarouselItem key={imgIndex}>
+                              <img
+                                src={image}
+                                alt={`${suggestion.destination} view ${imgIndex + 1}`}
+                                className="w-full h-64 object-cover"
+                              />
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                      </Carousel>
+                    </div>
+
+                    <h3 className="text-xl font-display font-bold mb-2">
+                      {suggestion.destination}
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      {suggestion.summary}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-4 mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">Duration:</span>
+                        {suggestion.duration}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">Estimated Budget:</span>
+                        ${suggestion.budget}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">Suggested Activities:</h4>
+                      <ul className="list-disc list-inside">
+                        {suggestion.activities.map((activity, actIndex) => (
+                          <li key={actIndex}>{activity}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </motion.div>
       </main>
     </div>

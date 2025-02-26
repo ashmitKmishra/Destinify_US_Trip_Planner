@@ -164,7 +164,7 @@ const Index = () => {
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-display font-bold">{destination.title}</h3>
-                    <p className="text-sm text-accent mb-2">{destination.location}</p>
+                    <p className="text-sm mb-2 text-orange-900 font-semibold">{destination.location}</p>
                     <p className="mb-4 text-orange-900 font-medium text-sm">{destination.description}</p>
                     <Button className="w-full bg-accent hover:bg-accent/90 transform hover:scale-105 transition-all duration-300" onClick={() => navigate("/plan-by-filters")}>
                       Plan Your Next Trip

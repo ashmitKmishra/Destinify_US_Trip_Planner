@@ -73,7 +73,7 @@ const Index = () => {
         }} transition={{
           duration: 0.8,
           delay: 0.6
-        }} className="mt-6 text-lg md:text-xl max-w-2xl text-green-400">
+        }} className="mt-6 text-lg md:text-xl max-w-2xl text-slate-50">
             From the Grand Canyon to Times Square, craft your perfect USA journey with personalized itineraries and expert recommendations.
           </motion.p>
         </div>

@@ -9,6 +9,9 @@ import Index from "./pages/Index";
 import CustomPrompt from "./pages/CustomPrompt";
 import PlanByFilters from "./pages/PlanByFilters";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +26,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/custom-prompt" element={<CustomPrompt />} />
             <Route path="/plan-by-filters" element={<PlanByFilters />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>

@@ -4,17 +4,18 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Sliders, MessageSquare, Leaf } from "lucide-react";
 import { Link } from "react-router-dom";
+
 const Index = () => {
   const navigate = useNavigate();
-  return <div className="min-h-screen bg-white">
+
+  return (
+    <div className="min-h-screen bg-white">
       <Navbar />
       
       {/* Hero Section */}
       <section className="relative h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{
-        backgroundImage: "url('https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=2000&q=80')"
-      }}></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/20"></div>
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=2000&q=80')" }}></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/20 backdrop-blur-[2px]"></div>
         
         {/* Wave Shape Divider */}
         <div className="absolute bottom-0 left-0 w-full">
@@ -25,57 +26,46 @@ const Index = () => {
         
         <div className="relative container mx-auto h-full flex flex-col items-center justify-center text-center px-4 pt-20">
           {/* Eye Logo */}
-          <motion.div initial={{
-          opacity: 0,
-          scale: 0.8
-        }} animate={{
-          opacity: 1,
-          scale: 1
-        }} transition={{
-          duration: 0.5
-        }} className="mb-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="mb-6"
+          >
             <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="50" cy="50" r="40" stroke="white" strokeWidth="4" />
               <circle cx="50" cy="50" r="15" fill="white" />
             </svg>
           </motion.div>
           
-          <motion.h1 initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.8,
-          delay: 0.2
-        }} className="text-5xl md:text-7xl font-display font-bold text-white leading-tight">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-5xl md:text-7xl font-display font-bold text-white leading-tight"
+          >
             Your American Adventure
           </motion.h1>
           
-          <motion.h2 initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.8,
-          delay: 0.4
-        }} className="text-4xl md:text-6xl font-display font-bold text-[#4e9af1] leading-tight">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-4xl md:text-6xl font-display font-bold text-[#4e9af1] leading-tight"
+          >
             Starts Here
           </motion.h2>
           
-          <motion.p initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
-        }} transition={{
-          duration: 0.8,
-          delay: 0.6
-        }} className="mt-6 text-lg md:text-xl max-w-2xl text-slate-50">
-            From the Grand Canyon to Times Square, craft your perfect USA journey with personalized itineraries and expert recommendations.
-          </motion.p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="mt-6 backdrop-blur-md bg-black/30 p-6 rounded-lg max-w-2xl"
+          >
+            <p className="text-lg md:text-xl text-white">
+              From the Grand Canyon to Times Square, craft your perfect USA journey with personalized itineraries and expert recommendations.
+            </p>
+          </motion.div>
         </div>
       </section>
       
@@ -153,87 +143,63 @@ const Index = () => {
       </section>
       
       {/* Why Choose Destinify Section */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="container mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <motion.h2 initial={{
-            opacity: 0,
-            y: 20
-          }} whileInView={{
-            opacity: 1,
-            y: 0
-          }} viewport={{
-            once: true
-          }} className="text-4xl font-display font-bold text-gray-800 mb-8">
-              Why Choose Destinify?
-            </motion.h2>
-            
-            <motion.div initial={{
-            opacity: 0,
-            x: -20
-          }} whileInView={{
-            opacity: 1,
-            x: 0
-          }} viewport={{
-            once: true
-          }} transition={{
-            delay: 0.2
-          }} className="flex items-start mb-6">
-              <span className="text-yellow-400 text-2xl mr-4">✨</span>
-              <div>
-                <h3 className="text-xl font-display font-bold text-gray-700">Personalized Experiences</h3>
-                <p className="text-gray-600">Every itinerary is crafted to match your unique preferences.</p>
-              </div>
+      <section className="py-16 px-4 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?auto=format&fit=crop&w=1200&q=80" 
+            alt="New York City Skyline" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/60 backdrop-blur-[1px]"></div>
+        </div>
+        
+        <div className="container mx-auto max-w-6xl relative z-10">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl font-display font-bold text-white mb-12 text-center"
+          >
+            Why Choose Destinify?
+          </motion.h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="backdrop-blur-md bg-white/10 p-6 rounded-xl border border-white/20"
+            >
+              <span className="text-yellow-400 text-2xl block mb-4">✨</span>
+              <h3 className="text-xl font-display font-bold text-white mb-2">Personalized Experiences</h3>
+              <p className="text-gray-200">Every itinerary is crafted to match your unique preferences.</p>
             </motion.div>
             
-            <motion.div initial={{
-            opacity: 0,
-            x: -20
-          }} whileInView={{
-            opacity: 1,
-            x: 0
-          }} viewport={{
-            once: true
-          }} transition={{
-            delay: 0.3
-          }} className="flex items-start mb-6">
-              <span className="text-yellow-400 text-2xl mr-4">💡</span>
-              <div>
-                <h3 className="text-xl font-display font-bold text-gray-700">Smart Recommendations</h3>
-                <p className="text-gray-600">Our AI understands your travel style and budget.</p>
-              </div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="backdrop-blur-md bg-white/10 p-6 rounded-xl border border-white/20"
+            >
+              <span className="text-yellow-400 text-2xl block mb-4">💡</span>
+              <h3 className="text-xl font-display font-bold text-white mb-2">Smart Recommendations</h3>
+              <p className="text-gray-200">Our AI understands your travel style and budget.</p>
             </motion.div>
             
-            <motion.div initial={{
-            opacity: 0,
-            x: -20
-          }} whileInView={{
-            opacity: 1,
-            x: 0
-          }} viewport={{
-            once: true
-          }} transition={{
-            delay: 0.4
-          }} className="flex items-start">
-              <span className="text-teal-500 text-2xl mr-4">🗺️</span>
-              <div>
-                <h3 className="text-xl font-display font-bold text-gray-700">Local Insights</h3>
-                <p className="text-gray-600">Get insider tips and hidden gems for each destination.</p>
-              </div>
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="backdrop-blur-md bg-white/10 p-6 rounded-xl border border-white/20"
+            >
+              <span className="text-teal-400 text-2xl block mb-4">🗺️</span>
+              <h3 className="text-xl font-display font-bold text-white mb-2">Local Insights</h3>
+              <p className="text-gray-200">Get insider tips and hidden gems for each destination.</p>
             </motion.div>
           </div>
-          
-          <motion.div initial={{
-          opacity: 0,
-          scale: 0.9
-        }} whileInView={{
-          opacity: 1,
-          scale: 1
-        }} viewport={{
-          once: true
-        }} className="rounded-xl overflow-hidden shadow-xl">
-            <img src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?auto=format&fit=crop&w=1200&q=80" alt="New York City Skyline" className="w-full h-full object-cover" />
-          </motion.div>
         </div>
       </section>
       
@@ -261,6 +227,8 @@ const Index = () => {
           </motion.div>
         </div>
       </section>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;

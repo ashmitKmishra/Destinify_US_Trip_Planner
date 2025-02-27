@@ -1,21 +1,19 @@
-
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Sliders, MessageSquare, Leaf } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Index = () => {
   const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-white">
       <Navbar />
       
       {/* Hero Section */}
       <section className="relative h-[500px] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=2000&q=80')" }}></div>
+        <div className="absolute inset-0 bg-cover bg-center" style={{
+        backgroundImage: "url('https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=2000&q=80')"
+      }}></div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/20"></div>
         
         {/* Wave Shape Divider */}
@@ -27,42 +25,55 @@ const Index = () => {
         
         <div className="relative container mx-auto h-full flex flex-col items-center justify-center text-center px-4 pt-20">
           {/* Eye Logo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          scale: 0.8
+        }} animate={{
+          opacity: 1,
+          scale: 1
+        }} transition={{
+          duration: 0.5
+        }} className="mb-6">
             <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="50" cy="50" r="40" stroke="white" strokeWidth="4" />
               <circle cx="50" cy="50" r="15" fill="white" />
             </svg>
           </motion.div>
           
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-display font-bold text-white leading-tight"
-          >
+          <motion.h1 initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          duration: 0.8,
+          delay: 0.2
+        }} className="text-5xl md:text-7xl font-display font-bold text-white leading-tight">
             Your American Adventure
           </motion.h1>
           
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-4xl md:text-6xl font-display font-bold text-[#4e9af1] leading-tight"
-          >
+          <motion.h2 initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          duration: 0.8,
+          delay: 0.4
+        }} className="text-4xl md:text-6xl font-display font-bold text-[#4e9af1] leading-tight">
             Starts Here
           </motion.h2>
           
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="mt-6 text-lg md:text-xl text-white max-w-2xl"
-          >
+          <motion.p initial={{
+          opacity: 0
+        }} animate={{
+          opacity: 1
+        }} transition={{
+          duration: 0.8,
+          delay: 0.6
+        }} className="mt-6 text-lg md:text-xl max-w-2xl text-green-400">
             From the Grand Canyon to Times Square, craft your perfect USA journey with personalized itineraries and expert recommendations.
           </motion.p>
         </div>
@@ -72,64 +83,69 @@ const Index = () => {
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Plan by Filters Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="bg-[#EEF1FF] rounded-xl shadow-lg p-8 flex flex-col items-center text-center h-full"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5
+        }} className="bg-[#EEF1FF] rounded-xl shadow-lg p-8 flex flex-col items-center text-center h-full">
             <Sliders className="w-16 h-16 text-[#3366CC] mb-6" />
             <h3 className="text-2xl font-display font-bold text-gray-800 mb-4">Plan by Filters</h3>
             <p className="text-gray-600 mb-6 flex-grow">
               Design your journey using our smart filters for the perfect match to your travel style.
             </p>
-            <Button 
-              className="w-full bg-[#3366CC] hover:bg-[#2855A9] text-white"
-              onClick={() => navigate("/plan-by-filters")}
-            >
+            <Button className="w-full bg-[#3366CC] hover:bg-[#2855A9] text-white" onClick={() => navigate("/plan-by-filters")}>
               Start Planning
             </Button>
           </motion.div>
           
           {/* Custom Prompt Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-[#FBE8FF] rounded-xl shadow-lg p-8 flex flex-col items-center text-center h-full"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.2
+        }} className="bg-[#FBE8FF] rounded-xl shadow-lg p-8 flex flex-col items-center text-center h-full">
             <MessageSquare className="w-16 h-16 text-[#9933CC] mb-6" />
             <h3 className="text-2xl font-display font-bold text-gray-800 mb-4">Custom Prompt</h3>
             <p className="text-gray-600 mb-6 flex-grow">
               Tell us your dream vacation in your own words and watch as we bring it to life.
             </p>
-            <Button 
-              className="w-full bg-[#9933CC] hover:bg-[#7722AA] text-white"
-              onClick={() => navigate("/custom-prompt")}
-            >
+            <Button className="w-full bg-[#9933CC] hover:bg-[#7722AA] text-white" onClick={() => navigate("/custom-prompt")}>
               Write Prompt
             </Button>
           </motion.div>
           
           {/* Browse Destinations Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="bg-[#E3F4ED] rounded-xl shadow-lg p-8 flex flex-col items-center text-center h-full"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} transition={{
+          duration: 0.5,
+          delay: 0.4
+        }} className="bg-[#E3F4ED] rounded-xl shadow-lg p-8 flex flex-col items-center text-center h-full">
             <Leaf className="w-16 h-16 text-[#00A36A] mb-6" />
             <h3 className="text-2xl font-display font-bold text-gray-800 mb-4">Browse Destinations</h3>
             <p className="text-gray-600 mb-6 flex-grow">
               Explore our curated collection of stunning locations across the United States.
             </p>
-            <Button 
-              className="w-full bg-[#00A36A] hover:bg-[#008255] text-white"
-              onClick={() => navigate("/plan-by-filters")}
-            >
+            <Button className="w-full bg-[#00A36A] hover:bg-[#008255] text-white" onClick={() => navigate("/plan-by-filters")}>
               Explore Now
             </Button>
           </motion.div>
@@ -140,22 +156,29 @@ const Index = () => {
       <section className="py-16 px-4 bg-gray-50">
         <div className="container mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-4xl font-display font-bold text-gray-800 mb-8"
-            >
+            <motion.h2 initial={{
+            opacity: 0,
+            y: 20
+          }} whileInView={{
+            opacity: 1,
+            y: 0
+          }} viewport={{
+            once: true
+          }} className="text-4xl font-display font-bold text-gray-800 mb-8">
               Why Choose Destinify?
             </motion.h2>
             
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="flex items-start mb-6"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            x: -20
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            delay: 0.2
+          }} className="flex items-start mb-6">
               <span className="text-yellow-400 text-2xl mr-4">✨</span>
               <div>
                 <h3 className="text-xl font-display font-bold text-gray-700">Personalized Experiences</h3>
@@ -163,13 +186,17 @@ const Index = () => {
               </div>
             </motion.div>
             
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="flex items-start mb-6"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            x: -20
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            delay: 0.3
+          }} className="flex items-start mb-6">
               <span className="text-yellow-400 text-2xl mr-4">💡</span>
               <div>
                 <h3 className="text-xl font-display font-bold text-gray-700">Smart Recommendations</h3>
@@ -177,13 +204,17 @@ const Index = () => {
               </div>
             </motion.div>
             
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-              className="flex items-start"
-            >
+            <motion.div initial={{
+            opacity: 0,
+            x: -20
+          }} whileInView={{
+            opacity: 1,
+            x: 0
+          }} viewport={{
+            once: true
+          }} transition={{
+            delay: 0.4
+          }} className="flex items-start">
               <span className="text-teal-500 text-2xl mr-4">🗺️</span>
               <div>
                 <h3 className="text-xl font-display font-bold text-gray-700">Local Insights</h3>
@@ -192,17 +223,16 @@ const Index = () => {
             </motion.div>
           </div>
           
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="rounded-xl overflow-hidden shadow-xl"
-          >
-            <img 
-              src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?auto=format&fit=crop&w=1200&q=80" 
-              alt="New York City Skyline" 
-              className="w-full h-full object-cover"
-            />
+          <motion.div initial={{
+          opacity: 0,
+          scale: 0.9
+        }} whileInView={{
+          opacity: 1,
+          scale: 1
+        }} viewport={{
+          once: true
+        }} className="rounded-xl overflow-hidden shadow-xl">
+            <img src="https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?auto=format&fit=crop&w=1200&q=80" alt="New York City Skyline" className="w-full h-full object-cover" />
           </motion.div>
         </div>
       </section>
@@ -210,30 +240,27 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 p-12 text-center"
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} whileInView={{
+          opacity: 1,
+          y: 0
+        }} viewport={{
+          once: true
+        }} className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 p-12 text-center">
             <h2 className="text-4xl font-display font-bold text-white mb-4">
               Ready to Begin Your Journey?
             </h2>
             <p className="text-xl text-white mb-8 max-w-2xl mx-auto">
               Your perfect USA adventure is just a few clicks away. Start planning today and create memories that last a lifetime.
             </p>
-            <Button 
-              size="lg"
-              className="bg-white text-blue-600 hover:bg-blue-50"
-              onClick={() => navigate("/plan-by-filters")}
-            >
+            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50" onClick={() => navigate("/plan-by-filters")}>
               Start Your Adventure
             </Button>
           </motion.div>
         </div>
       </section>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;

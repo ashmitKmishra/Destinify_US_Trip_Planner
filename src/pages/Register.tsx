@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from "@/components/Navbar";
 import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, AuthErrorCodes } from "firebase/auth";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -43,9 +43,28 @@ const Register = () => {
       });
       navigate("/");
     } catch (error: any) {
+      console.error("Registration error:", error.code, error.message);
+      
+      let errorMessage = "Registration failed. Please try again.";
+      
+      // Handle specific Firebase auth errors
+      if (error.code === "auth/email-already-in-use") {
+        errorMessage = "This email is already registered. Please use a different email or sign in.";
+      } else if (error.code === "auth/weak-password") {
+        errorMessage = "Password is too weak. Please use a stronger password.";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "Invalid email address. Please check and try again.";
+      } else if (error.code === "auth/network-request-failed") {
+        errorMessage = "Network error. Please check your connection and try again.";
+      } else if (error.code === "auth/too-many-requests") {
+        errorMessage = "Too many attempts. Please try again later.";
+      } else if (error.code === "auth/internal-error") {
+        errorMessage = "Internal error. Please try again later.";
+      }
+      
       toast({
         title: "Registration failed",
-        description: error.message || "Please try again with different credentials.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

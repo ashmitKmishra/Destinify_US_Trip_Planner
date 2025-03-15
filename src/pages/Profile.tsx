@@ -1,24 +1,30 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from "@/components/Navbar";
-import { auth } from "@/lib/firebase";
-import { updateProfile, updateEmail, updatePassword } from "firebase/auth";
+import { supabase } from "@/lib/supabase";
 import { useAuthState } from "@/hooks/useAuthState";
 import { Navigate } from "react-router-dom";
 
 const Profile = () => {
   const { user, loading } = useAuthState();
-  const [name, setName] = useState(user?.displayName || "");
-  const [email, setEmail] = useState(user?.email || "");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [updating, setUpdating] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (user) {
+      setName(user.user_metadata?.full_name || "");
+      setEmail(user.email || "");
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -37,19 +43,35 @@ const Profile = () => {
     setUpdating(true);
     
     try {
-      if (user.displayName !== name) {
-        await updateProfile(user, { displayName: name });
+      // Update user metadata (name)
+      if (user.user_metadata?.full_name !== name) {
+        const { error: updateError } = await supabase.auth.updateUser({
+          data: { full_name: name }
+        });
+        
+        if (updateError) throw updateError;
       }
       
+      // Update email if changed
       if (user.email !== email) {
-        await updateEmail(user, email);
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: email
+        });
+        
+        if (emailError) throw emailError;
       }
       
+      // Update password if provided
       if (newPassword) {
         if (newPassword !== confirmPassword) {
           throw new Error("Passwords do not match");
         }
-        await updatePassword(user, newPassword);
+        
+        const { error: passwordError } = await supabase.auth.updateUser({
+          password: newPassword
+        });
+        
+        if (passwordError) throw passwordError;
       }
       
       toast({

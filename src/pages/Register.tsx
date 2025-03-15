@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from "@/components/Navbar";
-import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, updateProfile, AuthErrorCodes } from "firebase/auth";
+import { supabase } from "@/lib/supabase";
+import { z } from "zod";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -34,32 +34,37 @@ const Register = () => {
     setLoading(true);
     
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: name });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+          }
+        }
+      });
+      
+      if (error) throw error;
       
       toast({
         title: "Registration successful",
-        description: "Welcome to Destinify USA!",
+        description: "Welcome to Destinify USA! Please check your email for verification.",
       });
       navigate("/");
     } catch (error: any) {
-      console.error("Registration error:", error.code, error.message);
+      console.error("Registration error:", error);
       
       let errorMessage = "Registration failed. Please try again.";
       
-      // Handle specific Firebase auth errors
-      if (error.code === "auth/email-already-in-use") {
+      // Handle specific Supabase auth errors
+      if (error.message.includes("already registered")) {
         errorMessage = "This email is already registered. Please use a different email or sign in.";
-      } else if (error.code === "auth/weak-password") {
+      } else if (error.message.includes("password")) {
         errorMessage = "Password is too weak. Please use a stronger password.";
-      } else if (error.code === "auth/invalid-email") {
+      } else if (error.message.includes("email")) {
         errorMessage = "Invalid email address. Please check and try again.";
-      } else if (error.code === "auth/network-request-failed") {
-        errorMessage = "Network error. Please check your connection and try again.";
-      } else if (error.code === "auth/too-many-requests") {
+      } else if (error.status === 429) {
         errorMessage = "Too many attempts. Please try again later.";
-      } else if (error.code === "auth/internal-error") {
-        errorMessage = "Internal error. Please try again later.";
       }
       
       toast({

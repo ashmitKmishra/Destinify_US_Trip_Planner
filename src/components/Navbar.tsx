@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { X, Menu, ArrowLeft, User, LogOut } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { auth } from "@/lib/firebase";
-import { signOut } from "firebase/auth";
+import { supabase } from "@/lib/supabase";
 import { useAuthState } from "@/hooks/useAuthState";
 
 const Navbar = () => {
@@ -17,7 +16,8 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);

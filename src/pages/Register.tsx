@@ -19,6 +19,27 @@ const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Basic validation schema
+  const emailSchema = z.string().email("Invalid email format");
+  const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
+
+  const validateInputs = () => {
+    try {
+      emailSchema.parse(email);
+      passwordSchema.parse(password);
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      }
+      return false;
+    }
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -31,40 +52,44 @@ const Register = () => {
       return;
     }
     
+    // Validate inputs before submission
+    if (!validateInputs()) {
+      return;
+    }
+    
     setLoading(true);
     
     try {
+      console.log("Attempting registration with:", { email, password, name });
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: name,
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/login`,
         }
       });
       
       if (error) throw error;
       
+      console.log("Registration response:", data);
+      
       toast({
         title: "Registration successful",
         description: "Welcome to Destinify USA! Please check your email for verification.",
       });
-      navigate("/");
+      navigate("/login");
     } catch (error: any) {
       console.error("Registration error:", error);
       
       let errorMessage = "Registration failed. Please try again.";
       
-      // Handle specific Supabase auth errors
-      if (error.message.includes("already registered")) {
-        errorMessage = "This email is already registered. Please use a different email or sign in.";
-      } else if (error.message.includes("password")) {
-        errorMessage = "Password is too weak. Please use a stronger password.";
-      } else if (error.message.includes("email")) {
-        errorMessage = "Invalid email address. Please check and try again.";
-      } else if (error.status === 429) {
-        errorMessage = "Too many attempts. Please try again later.";
+      // Handle specific Supabase error messages
+      if (error.message) {
+        errorMessage = error.message;
       }
       
       toast({

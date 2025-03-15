@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from "@/components/Navbar";
 import { supabase } from "@/lib/supabase";
+import { z } from "zod";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,17 +17,46 @@ const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Basic validation schema
+  const emailSchema = z.string().email("Invalid email format");
+
+  const validateEmail = () => {
+    try {
+      emailSchema.parse(email);
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      }
+      return false;
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate email before submission
+    if (!validateEmail()) {
+      return;
+    }
+    
     setLoading(true);
     
     try {
+      console.log("Attempting login with:", { email });
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) throw error;
+      
+      console.log("Login successful:", data);
       
       toast({
         title: "Login successful",
@@ -39,10 +69,14 @@ const Login = () => {
       let errorMessage = "Login failed. Please check your credentials and try again.";
       
       // Handle specific error cases
-      if (error.message.includes("Invalid login credentials")) {
-        errorMessage = "Invalid email or password. Please try again.";
-      } else if (error.message.includes("Email not confirmed")) {
-        errorMessage = "Please verify your email before logging in.";
+      if (error.message) {
+        if (error.message.includes("Invalid login credentials")) {
+          errorMessage = "Invalid email or password. Please try again.";
+        } else if (error.message.includes("Email not confirmed")) {
+          errorMessage = "Please verify your email before logging in.";
+        } else {
+          errorMessage = error.message;
+        }
       }
       
       toast({

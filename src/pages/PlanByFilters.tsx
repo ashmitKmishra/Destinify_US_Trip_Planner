@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +11,8 @@ import { generateTripSuggestions } from "@/lib/api";
 import type { TripSuggestion } from "@/types/trip";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ApiKeyModal } from "@/components/ApiKeyModal";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, AlertTriangle } from "lucide-react";
 
 const moodOptions = [
   { id: "adventurous", label: "Adventurous", icon: "🏃‍♂️" },
@@ -49,6 +50,8 @@ const PlanByFilters = () => {
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<TripSuggestion[]>([]);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [usingMockData, setUsingMockData] = useState(false);
 
   const handleGenerateItinerary = async () => {
     if (!selectedMood || !placeType) {
@@ -66,6 +69,9 @@ const PlanByFilters = () => {
     }
 
     setLoading(true);
+    setError(null);
+    setUsingMockData(false);
+    
     try {
       const response = await generateTripSuggestions({
         mood: selectedMood,
@@ -75,16 +81,24 @@ const PlanByFilters = () => {
       });
 
       if (response.error) {
-        throw new Error(response.error);
+        setError(response.error);
+        setSuggestions([]);
+      } else {
+        setSuggestions(response.suggestions);
+        
+        const isMockData = response.suggestions.some(s => 
+          s.destination === "Rocky Mountain National Park, Colorado" || 
+          s.destination === "Great Smoky Mountains, Tennessee" ||
+          s.destination === "Yosemite National Park, California"
+        );
+        
+        if (isMockData) {
+          setUsingMockData(true);
+        }
       }
-
-      setSuggestions(response.suggestions);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to generate trip suggestions. Please try again.",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      setError(error.message || "Failed to generate trip suggestions. Please try again.");
+      setSuggestions([]);
     } finally {
       setLoading(false);
     }
@@ -111,7 +125,11 @@ const PlanByFilters = () => {
               <Button variant="outline" className="flex-1 py-8 glass-card">
                 Plan with Filters
               </Button>
-              <Button variant="outline" className="flex-1 py-8 glass-card opacity-50">
+              <Button 
+                variant="outline" 
+                className="flex-1 py-8 glass-card opacity-50"
+                onClick={() => navigate('/custom-prompt')}
+              >
                 Custom Prompt
               </Button>
             </div>
@@ -193,6 +211,25 @@ const PlanByFilters = () => {
             </Button>
           </motion.div>
 
+          {error && (
+            <Alert variant="destructive" className="my-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {usingMockData && (
+            <Alert className="my-4 bg-yellow-100 border-yellow-300">
+              <AlertTriangle className="h-4 w-4 text-yellow-600" />
+              <AlertTitle className="text-yellow-800">Using Sample Data</AlertTitle>
+              <AlertDescription className="text-yellow-700">
+                Your OpenAI API key has reached its usage limit. We're showing sample trip suggestions instead.
+                To see personalized suggestions, please update your API key or try again later.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {suggestions.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -200,7 +237,7 @@ const PlanByFilters = () => {
               className="space-y-8"
             >
               <h2 className="text-2xl font-display font-bold text-center">
-                Your Personalized Trip Suggestions
+                Your {usingMockData ? "Sample" : "Personalized"} Trip Suggestions
               </h2>
               
               <div className="grid gap-6">

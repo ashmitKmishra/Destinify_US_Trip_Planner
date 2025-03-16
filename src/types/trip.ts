@@ -1,4 +1,12 @@
 
+export interface DayItinerary {
+  day: number;
+  title: string;
+  description: string;
+  activities: string[];
+  accommodation: string;
+}
+
 export interface TripSuggestion {
   destination: string;
   summary: string;
@@ -6,6 +14,8 @@ export interface TripSuggestion {
   budget: number;
   activities: string[];
   images: string[];
+  itinerary?: DayItinerary[];
+  travelTips?: string[];
 }
 
 export interface TripResponse {

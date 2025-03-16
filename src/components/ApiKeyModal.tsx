@@ -11,12 +11,14 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { setOpenAIKey } from "@/lib/api";
+import { setOpenAIKey, setDeepSeekKey } from "@/lib/api";
 import { AlertCircle, Info } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function ApiKeyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [apiKey, setApiKey] = useState("");
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState("openai");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,12 +29,22 @@ export function ApiKeyModal({ open, onClose }: { open: boolean; onClose: () => v
       return;
     }
     
-    if (!apiKey.startsWith("sk-")) {
+    if (activeTab === "openai" && !apiKey.startsWith("sk-")) {
       setError("Invalid API key format. OpenAI keys typically start with 'sk-'");
       return;
     }
     
-    setOpenAIKey(apiKey);
+    if (activeTab === "deepseek" && !apiKey.startsWith("")) {
+      // DeepSeek keys don't have a specific format we can validate yet
+      // This is a placeholder for future validation if needed
+    }
+    
+    if (activeTab === "openai") {
+      setOpenAIKey(apiKey);
+    } else {
+      setDeepSeekKey(apiKey);
+    }
+    
     setError("");
     onClose();
   };
@@ -41,27 +53,53 @@ export function ApiKeyModal({ open, onClose }: { open: boolean; onClose: () => v
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Enter OpenAI API Key</DialogTitle>
+          <DialogTitle>Enter API Key</DialogTitle>
           <DialogDescription>
-            Please enter your OpenAI API key to enable trip generation features.
+            Please enter your API key to enable trip generation features.
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          <Alert className="bg-blue-50 border-blue-200">
-            <Info className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-700">
-              You can get your API key from{" "}
-              <a 
-                href="https://platform.openai.com/api-keys" 
-                target="_blank" 
-                rel="noreferrer"
-                className="underline font-medium"
-              >
-                https://platform.openai.com/api-keys
-              </a>
-            </AlertDescription>
-          </Alert>
+          <Tabs defaultValue="openai" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="w-full">
+              <TabsTrigger value="openai" className="flex-1">OpenAI</TabsTrigger>
+              <TabsTrigger value="deepseek" className="flex-1">DeepSeek</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="openai" className="space-y-4 mt-4">
+              <Alert className="bg-blue-50 border-blue-200">
+                <Info className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-700">
+                  You can get your OpenAI API key from{" "}
+                  <a 
+                    href="https://platform.openai.com/api-keys" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="underline font-medium"
+                  >
+                    https://platform.openai.com/api-keys
+                  </a>
+                </AlertDescription>
+              </Alert>
+            </TabsContent>
+            
+            <TabsContent value="deepseek" className="space-y-4 mt-4">
+              <Alert className="bg-blue-50 border-blue-200">
+                <Info className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-700">
+                  You can get your DeepSeek API key from{" "}
+                  <a 
+                    href="https://platform.deepseek.com/" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="underline font-medium"
+                  >
+                    https://platform.deepseek.com/
+                  </a>
+                </AlertDescription>
+              </Alert>
+            </TabsContent>
+          </Tabs>
           
           {error && (
             <Alert variant="destructive">
@@ -72,7 +110,7 @@ export function ApiKeyModal({ open, onClose }: { open: boolean; onClose: () => v
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              placeholder="sk-..."
+              placeholder={activeTab === "openai" ? "sk-..." : "Your DeepSeek API key"}
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               className="w-full"

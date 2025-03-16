@@ -32,10 +32,10 @@ const CustomPrompt = () => {
       return;
     }
 
-    const hasOpenAIKey = localStorage.getItem('openai_api_key');
     const hasDeepSeekKey = localStorage.getItem('deepseek_api_key');
+    const hasOpenAIKey = localStorage.getItem('openai_api_key');
 
-    if (!hasOpenAIKey && !hasDeepSeekKey) {
+    if (!hasDeepSeekKey && !hasOpenAIKey) {
       setCurrentApiType("deepseek"); // Default to DeepSeek for new keys
       setShowApiKeyModal(true);
       return;
@@ -60,6 +60,12 @@ const CustomPrompt = () => {
         description: error.message || "Failed to generate custom trip plan. Please try again.",
         variant: "destructive",
       });
+      
+      // If OpenAI key failed and we have no DeepSeek key, open the modal to add DeepSeek key
+      if (error.message?.includes('OpenAI API key') && !hasDeepSeekKey) {
+        setCurrentApiType("deepseek");
+        setShowApiKeyModal(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -230,6 +236,7 @@ const CustomPrompt = () => {
       <ApiKeyModal 
         open={showApiKeyModal} 
         onClose={() => setShowApiKeyModal(false)} 
+        defaultTab={currentApiType}
       />
     </div>
   );

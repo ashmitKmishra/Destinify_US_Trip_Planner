@@ -15,10 +15,18 @@ import { setOpenAIKey, setDeepSeekKey } from "@/lib/api";
 import { AlertCircle, Info } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export function ApiKeyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function ApiKeyModal({ 
+  open, 
+  onClose, 
+  defaultTab = "openai" 
+}: { 
+  open: boolean; 
+  onClose: () => void;
+  defaultTab?: "openai" | "deepseek";
+}) {
   const [apiKey, setApiKey] = useState("");
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState("openai");
+  const [activeTab, setActiveTab] = useState<"openai" | "deepseek">(defaultTab);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,9 +42,10 @@ export function ApiKeyModal({ open, onClose }: { open: boolean; onClose: () => v
       return;
     }
     
-    if (activeTab === "deepseek" && !apiKey.startsWith("")) {
+    if (activeTab === "deepseek" && !apiKey.trim()) {
       // DeepSeek keys don't have a specific format we can validate yet
-      // This is a placeholder for future validation if needed
+      setError("API key cannot be empty");
+      return;
     }
     
     if (activeTab === "openai") {
@@ -60,7 +69,7 @@ export function ApiKeyModal({ open, onClose }: { open: boolean; onClose: () => v
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          <Tabs defaultValue="openai" value={activeTab} onValueChange={setActiveTab}>
+          <Tabs defaultValue={defaultTab} value={activeTab} onValueChange={(value) => setActiveTab(value as "openai" | "deepseek")}>
             <TabsList className="w-full">
               <TabsTrigger value="openai" className="flex-1">OpenAI</TabsTrigger>
               <TabsTrigger value="deepseek" className="flex-1">DeepSeek</TabsTrigger>

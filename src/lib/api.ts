@@ -187,61 +187,30 @@ export async function generateTripSuggestions(filters: {
 }
 
 export async function generateCustomTrip(prompt: string): Promise<TripResponse> {
+  const deepSeekKey = getDeepSeekKey();
   const openAIKey = getOpenAIKey();
-  if (!openAIKey) {
+  
+  if (!deepSeekKey && !openAIKey) {
     return { 
       suggestions: [], 
-      error: 'Please add your OpenAI API key in the settings' 
+      error: 'Please add your DeepSeek or OpenAI API key in the settings' 
     };
   }
-
+  
   try {
-    const openAIResponse = await fetch(`${OPENAI_API_BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a travel expert specializing in USA destinations. Generate a trip plan in JSON format with the structure: {"destination": "string", "summary": "string", "duration": "string", "budget": number, "activities": string[]}'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-      }),
-    });
-
-    const openAIData = await openAIResponse.json();
-    
-    if (openAIData.error) {
-      if (openAIData.error.code === 'insufficient_quota') {
-        throw new Error('Your OpenAI API key has exceeded its quota. Please check your billing details or try a different API key.');
-      }
-      throw new Error(openAIData.error.message || 'OpenAI API error');
+    // Try DeepSeek first if the key is available
+    if (deepSeekKey) {
+      return await generateCustomTripWithDeepSeek(prompt);
+    } else if (openAIKey) {
+      return await generateCustomTripWithOpenAI(prompt);
+    } else {
+      throw new Error('No API key available');
     }
-
-    if (!openAIData.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from OpenAI API');
-    }
-
-    const tripPlan = JSON.parse(openAIData.choices[0].message.content);
-
-    // Add images using Pexels
-    const images = await getImagesForLocation(tripPlan.destination);
-    const suggestionWithImages = { ...tripPlan, images };
-
-    return { suggestions: [suggestionWithImages] };
   } catch (error: any) {
-    console.error('Error:', error);
+    console.error('Error generating custom trip:', error);
     return { 
       suggestions: [], 
-      error: error.message || 'Failed to generate custom trip plan. Please check your OpenAI API key.' 
+      error: error.message || 'Failed to generate custom trip plan. Please check your API keys.' 
     };
   }
 }

@@ -63,7 +63,10 @@ const PlanByFilters = () => {
       return;
     }
 
-    if (!localStorage.getItem('openai_api_key')) {
+    const hasGrokKey = localStorage.getItem('grok_api_key');
+    const hasOpenAIKey = localStorage.getItem('openai_api_key');
+
+    if (!hasGrokKey && !hasOpenAIKey) {
       setShowApiKeyModal(true);
       return;
     }

@@ -20,7 +20,7 @@ const CustomPrompt = () => {
   const [loading, setLoading] = useState(false);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [suggestions, setSuggestions] = useState<TripSuggestion[]>([]);
-  const [currentApiType, setCurrentApiType] = useState<"openai" | "deepseek">("deepseek");
+  const [currentApiType, setCurrentApiType] = useState<"grok" | "openai" | "deepseek">("grok");
 
   const handleGenerateItinerary = async () => {
     if (!prompt.trim()) {
@@ -32,11 +32,12 @@ const CustomPrompt = () => {
       return;
     }
 
+    const hasGrokKey = localStorage.getItem('grok_api_key');
     const hasDeepSeekKey = localStorage.getItem('deepseek_api_key');
     const hasOpenAIKey = localStorage.getItem('openai_api_key');
 
-    if (!hasDeepSeekKey && !hasOpenAIKey) {
-      setCurrentApiType("deepseek"); // Default to DeepSeek for new keys
+    if (!hasGrokKey && !hasDeepSeekKey && !hasOpenAIKey) {
+      setCurrentApiType("grok"); // Default to Grok for new keys
       setShowApiKeyModal(true);
       return;
     }
@@ -61,9 +62,15 @@ const CustomPrompt = () => {
         variant: "destructive",
       });
       
-      // If OpenAI key failed and we have no DeepSeek key, open the modal to add DeepSeek key
-      if (error.message?.includes('OpenAI API key') && !hasDeepSeekKey) {
+      // If an API key failed, suggest adding another key
+      if (!hasGrokKey) {
+        setCurrentApiType("grok");
+        setShowApiKeyModal(true);
+      } else if (!hasDeepSeekKey && error.message?.includes('Grok')) {
         setCurrentApiType("deepseek");
+        setShowApiKeyModal(true);
+      } else if (!hasOpenAIKey && (error.message?.includes('Grok') || error.message?.includes('DeepSeek'))) {
+        setCurrentApiType("openai");
         setShowApiKeyModal(true);
       }
     } finally {

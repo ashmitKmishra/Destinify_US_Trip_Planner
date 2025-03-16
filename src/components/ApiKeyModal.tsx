@@ -11,22 +11,22 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { setOpenAIKey, setDeepSeekKey } from "@/lib/api";
+import { setOpenAIKey, setDeepSeekKey, setGrokKey } from "@/lib/api";
 import { AlertCircle, Info } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function ApiKeyModal({ 
   open, 
   onClose, 
-  defaultTab = "openai" 
+  defaultTab = "grok" 
 }: { 
   open: boolean; 
   onClose: () => void;
-  defaultTab?: "openai" | "deepseek";
+  defaultTab?: "grok" | "openai" | "deepseek";
 }) {
   const [apiKey, setApiKey] = useState("");
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"openai" | "deepseek">(defaultTab);
+  const [activeTab, setActiveTab] = useState<"grok" | "openai" | "deepseek">(defaultTab);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,13 +42,20 @@ export function ApiKeyModal({
       return;
     }
     
+    if (activeTab === "grok" && !apiKey.trim()) {
+      setError("API key cannot be empty");
+      return;
+    }
+    
     if (activeTab === "deepseek" && !apiKey.trim()) {
       // DeepSeek keys don't have a specific format we can validate yet
       setError("API key cannot be empty");
       return;
     }
     
-    if (activeTab === "openai") {
+    if (activeTab === "grok") {
+      setGrokKey(apiKey);
+    } else if (activeTab === "openai") {
       setOpenAIKey(apiKey);
     } else {
       setDeepSeekKey(apiKey);
@@ -69,11 +76,29 @@ export function ApiKeyModal({
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          <Tabs defaultValue={defaultTab} value={activeTab} onValueChange={(value) => setActiveTab(value as "openai" | "deepseek")}>
+          <Tabs defaultValue={defaultTab} value={activeTab} onValueChange={(value) => setActiveTab(value as "grok" | "openai" | "deepseek")}>
             <TabsList className="w-full">
+              <TabsTrigger value="grok" className="flex-1">Grok</TabsTrigger>
               <TabsTrigger value="openai" className="flex-1">OpenAI</TabsTrigger>
               <TabsTrigger value="deepseek" className="flex-1">DeepSeek</TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="grok" className="space-y-4 mt-4">
+              <Alert className="bg-blue-50 border-blue-200">
+                <Info className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-700">
+                  You can get your Grok API key from{" "}
+                  <a 
+                    href="https://x.ai/" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="underline font-medium"
+                  >
+                    https://x.ai/
+                  </a>
+                </AlertDescription>
+              </Alert>
+            </TabsContent>
             
             <TabsContent value="openai" className="space-y-4 mt-4">
               <Alert className="bg-blue-50 border-blue-200">
@@ -119,7 +144,11 @@ export function ApiKeyModal({
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              placeholder={activeTab === "openai" ? "sk-..." : "Your DeepSeek API key"}
+              placeholder={
+                activeTab === "openai" ? "sk-..." : 
+                activeTab === "grok" ? "Your Grok API key" : 
+                "Your DeepSeek API key"
+              }
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               className="w-full"

@@ -2,6 +2,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const grokApiKey = Deno.env.get('GROK_API_KEY');
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const deepSeekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
 const unsplashApiKey = Deno.env.get('UNSPLASH_API_KEY');
@@ -20,8 +21,52 @@ serve(async (req) => {
     const { prompt, preferredApi } = await req.json();
     let tripPlan;
     
-    // Try DeepSeek first if available and preferred
-    if ((preferredApi === 'deepseek' || !preferredApi) && deepSeekApiKey) {
+    // Try Grok first if available and preferred
+    if ((preferredApi === 'grok' || !preferredApi) && grokApiKey) {
+      try {
+        const grokResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${grokApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama3-8b-8192',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a travel expert specializing in USA destinations. Generate detailed itineraries with helpful links and recommendations. Respond in JSON format only.'
+              },
+              {
+                role: 'user',
+                content: prompt
+              }
+            ],
+          }),
+        });
+
+        const grokData = await grokResponse.json();
+        
+        if (grokData.error) {
+          throw new Error(grokData.error.message || 'Grok API error');
+        }
+        
+        tripPlan = JSON.parse(grokData.choices[0].message.content);
+      } catch (error) {
+        console.error('Grok API error:', error);
+        
+        // Fall back to other APIs if Grok fails
+        if (deepSeekApiKey || openAIApiKey) {
+          console.log('Falling back to other available APIs');
+          // Continue to fallback logic below
+        } else {
+          throw error; // Re-throw if no fallback available
+        }
+      }
+    }
+    
+    // Use DeepSeek if Grok wasn't used or failed
+    if (!tripPlan && deepSeekApiKey) {
       try {
         const deepSeekResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
           method: 'POST',
@@ -64,7 +109,7 @@ serve(async (req) => {
       }
     }
     
-    // Use OpenAI if DeepSeek wasn't used or failed
+    // Use OpenAI as last resort
     if (!tripPlan && openAIApiKey) {
       const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',

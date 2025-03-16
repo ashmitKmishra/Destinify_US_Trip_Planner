@@ -1,69 +1,46 @@
-# Welcome to your Lovable project
+# Destinify
 
-## Project info
+Destinify is a modern web application designed to enhance travel planning by generating personalized itineraries. Built with Vite, TypeScript, React, shadcn-ui, and Tailwind CSS, it offers a fast, responsive, and visually appealing user interface. Destinify leverages AI-powered features (via OpenAI's API) to provide tailored recommendations for activities, dining, and sightseeing based on user preferences and destinations.
 
-**URL**: https://lovable.dev/projects/201fd2d0-e701-4de3-a305-a62310d11b34
+## Table of Contents
 
-## How can I edit this code?
+- [Project Summary](#project-summary)
+- [Tech Stack](#tech-stack)
+- [What the App Looks Like](#what-the-app-looks-like)
+- [Running the Code Locally](#running-the-code-locally)
+- [Obtaining an OpenAI API Key](#obtaining-an-openai-api-key)
 
-There are several ways of editing your application.
+## Project Summary
 
-**Use Lovable**
+Destinify simplifies travel planning by creating customized itineraries for trips of any length—whether a weekend getaway or an extended vacation. Users can input their travel preferences and destinations, and Destinify generates a detailed plan with AI-driven suggestions. The app’s sleek design ensures an intuitive and enjoyable experience for all users.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/201fd2d0-e701-4de3-a305-a62310d11b34) and start prompting.
+## Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+This project is built with the following technologies:
 
-**Use your preferred IDE**
+- **[Vite](https://vitejs.dev/)** - A fast frontend build tool for modern web development.
+- **[TypeScript](https://www.typescriptlang.org/)** - Adds static typing to JavaScript for improved code reliability.
+- **[React](https://reactjs.org/)** - A JavaScript library for building dynamic user interfaces.
+- **[shadcn-ui](https://shadcn.dev/)** - A customizable UI component library for rapid development.
+- **[Tailwind CSS](https://tailwindcss.com/)** - A utility-first CSS framework for flexible and responsive styling.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## What the App Looks Like
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Destinify features a clean and user-friendly interface. Below are placeholders for screenshots to showcase the app:
 
-Follow these steps:
+![Screenshot 1](path/to/screenshot1.png)  
+*Caption: Input screen for entering travel preferences and destination.*
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+![Screenshot 2](path/to/screenshot2.png)  
+*Caption: Generated itinerary with suggested activities and schedule.*
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+*Note: Replace `path/to/screenshot1.png` and `path/to/screenshot2.png` with the actual file paths to your screenshots (e.g., `images/screenshot1.png`). Add more screenshots as needed to highlight key features.*
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Running the Code Locally
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Follow these steps to set up and run Destinify on your local machine:
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/201fd2d0-e701-4de3-a305-a62310d11b34) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/your-username/destinify.git
+   cd destinify

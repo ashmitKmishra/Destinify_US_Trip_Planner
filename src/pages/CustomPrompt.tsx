@@ -1,11 +1,10 @@
-
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from "@/components/Navbar";
-import { generateCustomTrip } from "@/lib/api";
+import { generateCustomTrip, setOpenAIKey } from "@/lib/api";
 import type { TripSuggestion } from "@/types/trip";
 import { ApiKeyModal } from "@/components/ApiKeyModal";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -20,7 +19,16 @@ const CustomPrompt = () => {
   const [loading, setLoading] = useState(false);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [suggestions, setSuggestions] = useState<TripSuggestion[]>([]);
-  const [currentApiType, setCurrentApiType] = useState<"grok" | "openai" | "deepseek">("grok");
+  const [currentApiType, setCurrentApiType] = useState<"grok" | "openai" | "deepseek">("openai");
+
+  useEffect(() => {
+    const openaiKey = "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";
+    setOpenAIKey(openaiKey);
+    toast({
+      title: "API Key Set",
+      description: "Your OpenAI API key has been configured automatically.",
+    });
+  }, [toast]);
 
   const handleGenerateItinerary = async () => {
     if (!prompt.trim()) {
@@ -29,16 +37,6 @@ const CustomPrompt = () => {
         description: "Please enter a prompt before generating an itinerary.",
         variant: "destructive",
       });
-      return;
-    }
-
-    const hasGrokKey = localStorage.getItem('grok_api_key');
-    const hasDeepSeekKey = localStorage.getItem('deepseek_api_key');
-    const hasOpenAIKey = localStorage.getItem('openai_api_key');
-
-    if (!hasGrokKey && !hasDeepSeekKey && !hasOpenAIKey) {
-      setCurrentApiType("grok"); // Default to Grok for new keys
-      setShowApiKeyModal(true);
       return;
     }
 
@@ -62,17 +60,8 @@ const CustomPrompt = () => {
         variant: "destructive",
       });
       
-      // If an API key failed, suggest adding another key
-      if (!hasGrokKey) {
-        setCurrentApiType("grok");
-        setShowApiKeyModal(true);
-      } else if (!hasDeepSeekKey && error.message?.includes('Grok')) {
-        setCurrentApiType("deepseek");
-        setShowApiKeyModal(true);
-      } else if (!hasOpenAIKey && (error.message?.includes('Grok') || error.message?.includes('DeepSeek'))) {
-        setCurrentApiType("openai");
-        setShowApiKeyModal(true);
-      }
+      setCurrentApiType("openai");
+      setShowApiKeyModal(true);
     } finally {
       setLoading(false);
     }

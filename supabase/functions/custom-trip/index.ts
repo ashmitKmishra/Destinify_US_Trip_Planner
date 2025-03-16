@@ -2,9 +2,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const grokApiKey = Deno.env.get('GROK_API_KEY');
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-const deepSeekApiKey = Deno.env.get('DEEPSEEK_API_KEY');
+const openAIApiKey = "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";
 const unsplashApiKey = Deno.env.get('UNSPLASH_API_KEY');
 
 const corsHeaders = {
@@ -18,132 +16,62 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, preferredApi } = await req.json();
-    let tripPlan;
+    const { prompt } = await req.json();
     
-    // Try Grok first if available and preferred
-    if ((preferredApi === 'grok' || !preferredApi) && grokApiKey) {
-      try {
-        const grokResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${grokApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'llama3-8b-8192',
-            messages: [
-              {
-                role: 'system',
-                content: 'You are a travel expert specializing in USA destinations. Generate detailed itineraries with helpful links and recommendations. Respond in JSON format only.'
-              },
-              {
-                role: 'user',
-                content: prompt
-              }
-            ],
-          }),
-        });
-
-        const grokData = await grokResponse.json();
-        
-        if (grokData.error) {
-          throw new Error(grokData.error.message || 'Grok API error');
-        }
-        
-        tripPlan = JSON.parse(grokData.choices[0].message.content);
-      } catch (error) {
-        console.error('Grok API error:', error);
-        
-        // Fall back to other APIs if Grok fails
-        if (deepSeekApiKey || openAIApiKey) {
-          console.log('Falling back to other available APIs');
-          // Continue to fallback logic below
-        } else {
-          throw error; // Re-throw if no fallback available
-        }
-      }
-    }
-    
-    // Use DeepSeek if Grok wasn't used or failed
-    if (!tripPlan && deepSeekApiKey) {
-      try {
-        const deepSeekResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${deepSeekApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'deepseek-chat',
-            messages: [
-              {
-                role: 'system',
-                content: 'You are a travel expert specializing in USA destinations. Generate detailed itineraries with helpful links and recommendations. Respond in JSON format only.'
-              },
-              {
-                role: 'user',
-                content: prompt
-              }
-            ],
-          }),
-        });
-
-        const deepSeekData = await deepSeekResponse.json();
-        
-        if (deepSeekData.error) {
-          throw new Error(deepSeekData.error.message || 'DeepSeek API error');
-        }
-        
-        tripPlan = JSON.parse(deepSeekData.choices[0].message.content);
-      } catch (error) {
-        console.error('DeepSeek API error:', error);
-        
-        // Fall back to OpenAI if DeepSeek fails and OpenAI key is available
-        if (openAIApiKey) {
-          console.log('Falling back to OpenAI');
-          // Continue to OpenAI logic below
-        } else {
-          throw error; // Re-throw if no fallback available
-        }
-      }
-    }
-    
-    // Use OpenAI as last resort
-    if (!tripPlan && openAIApiKey) {
-      const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
+    // Use OpenAI for custom trip generation
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a travel expert specializing in USA destinations. Generate a detailed trip plan in JSON format. Include the following fields:
             {
-              role: 'system',
-              content: 'You are a travel expert specializing in USA destinations. Generate detailed itineraries with helpful links and recommendations.'
-            },
-            {
-              role: 'user',
-              content: prompt
+              "destination": "Full name of the destination",
+              "summary": "A brief summary of the trip (2-3 sentences)",
+              "duration": "Recommended duration (e.g., 5 days)",
+              "budget": numeric value in USD without dollar sign or commas (e.g. 1500),
+              "activities": ["List of 5-7 activity recommendations"],
+              "itinerary": [
+                {
+                  "day": 1,
+                  "title": "Title for day 1",
+                  "description": "Detailed plan for day 1 (2-3 sentences)",
+                  "activities": ["Morning activity", "Afternoon activity", "Evening activity"],
+                  "accommodation": "Recommended place to stay"
+                },
+                // more days following the same structure
+              ],
+              "travelTips": ["List of 3-5 helpful travel tips"]
             }
-          ],
-        }),
-      });
+            
+            Make sure your response contains ONLY the JSON object with no additional text. The JSON must be valid and parseable.`
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+      }),
+    });
 
-      const gptData = await openAIResponse.json();
-      
-      if (gptData.error) {
-        throw new Error(gptData.error.message || 'OpenAI API error');
-      }
-      
-      tripPlan = JSON.parse(gptData.choices[0].message.content);
+    const gptData = await openAIResponse.json();
+    
+    if (gptData.error) {
+      throw new Error(gptData.error.message || 'OpenAI API error');
     }
-
-    if (!tripPlan) {
-      throw new Error('No API service was able to generate a trip plan');
-    }
+    
+    const contentString = gptData.choices[0].message.content;
+    // Extract JSON from the response (in case it contains markdown or other text)
+    const jsonMatch = contentString.match(/```json\n([\s\S]*?)\n```/) || contentString.match(/```\n([\s\S]*?)\n```/) || [null, contentString];
+    const jsonString = jsonMatch[1] || contentString;
+    
+    const tripPlan = JSON.parse(jsonString.trim());
 
     // Fetch relevant images from Unsplash
     const searchResponse = await fetch(

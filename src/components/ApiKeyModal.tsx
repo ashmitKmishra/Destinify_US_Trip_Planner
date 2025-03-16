@@ -18,7 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export function ApiKeyModal({ 
   open, 
   onClose, 
-  defaultTab = "grok" 
+  defaultTab = "openai" 
 }: { 
   open: boolean; 
   onClose: () => void;
@@ -78,27 +78,10 @@ export function ApiKeyModal({
         <div className="space-y-4 py-4">
           <Tabs defaultValue={defaultTab} value={activeTab} onValueChange={(value) => setActiveTab(value as "grok" | "openai" | "deepseek")}>
             <TabsList className="w-full">
-              <TabsTrigger value="grok" className="flex-1">Grok</TabsTrigger>
               <TabsTrigger value="openai" className="flex-1">OpenAI</TabsTrigger>
+              <TabsTrigger value="grok" className="flex-1">Grok</TabsTrigger>
               <TabsTrigger value="deepseek" className="flex-1">DeepSeek</TabsTrigger>
             </TabsList>
-            
-            <TabsContent value="grok" className="space-y-4 mt-4">
-              <Alert className="bg-blue-50 border-blue-200">
-                <Info className="h-4 w-4 text-blue-600" />
-                <AlertDescription className="text-blue-700">
-                  You can get your Grok API key from{" "}
-                  <a 
-                    href="https://x.ai/" 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="underline font-medium"
-                  >
-                    https://x.ai/
-                  </a>
-                </AlertDescription>
-              </Alert>
-            </TabsContent>
             
             <TabsContent value="openai" className="space-y-4 mt-4">
               <Alert className="bg-blue-50 border-blue-200">
@@ -112,6 +95,23 @@ export function ApiKeyModal({
                     className="underline font-medium"
                   >
                     https://platform.openai.com/api-keys
+                  </a>
+                </AlertDescription>
+              </Alert>
+            </TabsContent>
+            
+            <TabsContent value="grok" className="space-y-4 mt-4">
+              <Alert className="bg-blue-50 border-blue-200">
+                <Info className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-700">
+                  You can get your Grok API key from{" "}
+                  <a 
+                    href="https://x.ai/" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="underline font-medium"
+                  >
+                    https://x.ai/
                   </a>
                 </AlertDescription>
               </Alert>

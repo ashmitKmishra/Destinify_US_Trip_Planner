@@ -2,8 +2,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const grokApiKey = Deno.env.get('GROK_API_KEY');
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const openAIApiKey = "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";
 const unsplashApiKey = Deno.env.get('UNSPLASH_API_KEY');
 
 const corsHeaders = {
@@ -20,84 +19,38 @@ serve(async (req) => {
     const { mood, numberOfPeople, placeType, budget } = await req.json();
     let tripSuggestions;
     
-    // Try with Grok first if available
-    if (grokApiKey) {
-      try {
-        const grokResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${grokApiKey}`,
-            'Content-Type': 'application/json',
+    // Use OpenAI for trip generation
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a travel expert specializing in USA destinations. Provide detailed trip suggestions based on user preferences.'
           },
-          body: JSON.stringify({
-            model: 'llama3-8b-8192',
-            messages: [
-              {
-                role: 'system',
-                content: 'You are a travel expert specializing in USA destinations. Generate trip suggestions in JSON format only.'
-              },
-              {
-                role: 'user',
-                content: `Generate 3 trip suggestions for a ${mood} trip for ${numberOfPeople} people interested in ${placeType} with a budget of $${budget}. Include destination name, summary, duration, budget breakdown, and 4-5 must-do activities. Return as valid JSON array.`
-              }
-            ],
-          }),
-        });
+          {
+            role: 'user',
+            content: `Generate 3 trip suggestions for a ${mood} trip for ${numberOfPeople} people interested in ${placeType} with a budget of $${budget}. Include destination name, summary, duration, budget breakdown, and 4-5 must-do activities.`
+          }
+        ],
+      }),
+    });
 
-        const grokData = await grokResponse.json();
-        
-        if (grokData.error) {
-          throw new Error(grokData.error.message || 'Grok API error');
-        }
-        
-        tripSuggestions = JSON.parse(grokData.choices[0].message.content);
-      } catch (error) {
-        console.error('Grok API error:', error);
-        
-        // Fall back to OpenAI if Grok fails and OpenAI key is available
-        if (openAIApiKey) {
-          console.log('Falling back to OpenAI');
-          // Continue to OpenAI logic below
-        } else {
-          throw error; // Re-throw if no fallback available
-        }
-      }
+    const gptData = await openAIResponse.json();
+    
+    if (gptData.error) {
+      throw new Error(gptData.error.message || 'OpenAI API error');
     }
     
-    // Use OpenAI if Grok wasn't used or failed
-    if (!tripSuggestions && openAIApiKey) {
-      const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a travel expert specializing in USA destinations. Provide detailed trip suggestions based on user preferences.'
-            },
-            {
-              role: 'user',
-              content: `Generate 3 trip suggestions for a ${mood} trip for ${numberOfPeople} people interested in ${placeType} with a budget of $${budget}. Include destination name, summary, duration, budget breakdown, and 4-5 must-do activities.`
-            }
-          ],
-        }),
-      });
-
-      const gptData = await openAIResponse.json();
-      
-      if (gptData.error) {
-        throw new Error(gptData.error.message || 'OpenAI API error');
-      }
-      
-      tripSuggestions = JSON.parse(gptData.choices[0].message.content);
-    }
+    tripSuggestions = JSON.parse(gptData.choices[0].message.content);
 
     if (!tripSuggestions) {
-      throw new Error('No API service was able to generate trip suggestions');
+      throw new Error('Failed to generate trip suggestions');
     }
 
     // Fetch images for each suggestion from Unsplash

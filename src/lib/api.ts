@@ -5,7 +5,7 @@ const OPENAI_API_BASE_URL = 'https://api.openai.com/v1';
 const PEXELS_API_URL = 'https://api.pexels.com/v1';
 
 // API key management - We always use the hardcoded API key
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "YOUR_KEY";
 const getPexelsKey = () => '563492ad6f91700001000001f89979b59c084e96a273fd3898b1c7f6'; // Free Pexels API key
 
 export function setOpenAIKey(key: string): void {

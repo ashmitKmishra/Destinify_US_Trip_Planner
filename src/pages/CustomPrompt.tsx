@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from "@/components/Navbar";
-import { generateCustomTrip, setOpenAIKey } from "@/lib/api";
+import { generateCustomTrip } from "@/lib/api";
 import type { TripSuggestion } from "@/types/trip";
-import { ApiKeyModal } from "@/components/ApiKeyModal";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,19 +16,8 @@ const CustomPrompt = () => {
   const { toast } = useToast();
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [suggestions, setSuggestions] = useState<TripSuggestion[]>([]);
-  const [currentApiType, setCurrentApiType] = useState<"grok" | "openai" | "deepseek">("openai");
-
-  useEffect(() => {
-    const openaiKey = "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";
-    setOpenAIKey(openaiKey);
-    toast({
-      title: "API Key Set",
-      description: "Your OpenAI API key has been configured automatically.",
-    });
-  }, [toast]);
-
+  
   const handleGenerateItinerary = async () => {
     if (!prompt.trim()) {
       toast({
@@ -59,9 +47,6 @@ const CustomPrompt = () => {
         description: error.message || "Failed to generate custom trip plan. Please try again.",
         variant: "destructive",
       });
-      
-      setCurrentApiType("openai");
-      setShowApiKeyModal(true);
     } finally {
       setLoading(false);
     }
@@ -229,11 +214,6 @@ const CustomPrompt = () => {
           )}
         </motion.div>
       </main>
-      <ApiKeyModal 
-        open={showApiKeyModal} 
-        onClose={() => setShowApiKeyModal(false)} 
-        defaultTab={currentApiType}
-      />
     </div>
   );
 };

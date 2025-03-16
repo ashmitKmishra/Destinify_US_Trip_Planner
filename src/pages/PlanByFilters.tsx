@@ -10,7 +10,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { generateTripSuggestions } from "@/lib/api";
 import type { TripSuggestion } from "@/types/trip";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { ApiKeyModal } from "@/components/ApiKeyModal";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, AlertTriangle } from "lucide-react";
 
@@ -49,7 +48,6 @@ const PlanByFilters = () => {
   const [budget, setBudget] = useState([2000]);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<TripSuggestion[]>([]);
-  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [usingMockData, setUsingMockData] = useState(false);
 
@@ -60,14 +58,6 @@ const PlanByFilters = () => {
         description: "Please select both a mood and place type before generating an itinerary.",
         variant: "destructive",
       });
-      return;
-    }
-
-    const hasGrokKey = localStorage.getItem('grok_api_key');
-    const hasOpenAIKey = localStorage.getItem('openai_api_key');
-
-    if (!hasGrokKey && !hasOpenAIKey) {
-      setShowApiKeyModal(true);
       return;
     }
 
@@ -303,10 +293,6 @@ const PlanByFilters = () => {
           )}
         </motion.div>
       </main>
-      <ApiKeyModal 
-        open={showApiKeyModal} 
-        onClose={() => setShowApiKeyModal(false)} 
-      />
     </div>
   );
 };

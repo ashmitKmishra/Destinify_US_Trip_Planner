@@ -1,15 +1,12 @@
+
 import { TripResponse } from "@/types/trip";
 
 const OPENAI_API_BASE_URL = 'https://api.openai.com/v1';
-const DEEPSEEK_API_BASE_URL = 'https://api.deepseek.com/v1';
 const PEXELS_API_URL = 'https://api.pexels.com/v1';
-const GROK_API_BASE_URL = 'https://api.groq.com/openai/v1';
 
-// API key management
-const getOpenAIKey = () => localStorage.getItem('openai_api_key');
-const getDeepSeekKey = () => localStorage.getItem('deepseek_api_key');
+// API key management - We always use the hardcoded API key
+const OPENAI_API_KEY = "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";
 const getPexelsKey = () => '563492ad6f91700001000001f89979b59c084e96a273fd3898b1c7f6'; // Free Pexels API key
-const getGrokKey = () => localStorage.getItem('grok_api_key');
 
 export function setOpenAIKey(key: string): void {
   localStorage.setItem('openai_api_key', key);
@@ -120,156 +117,55 @@ export async function generateTripSuggestions(filters: {
   placeType: string;
   budget: number;
 }): Promise<TripResponse> {
-  const grokKey = getGrokKey();
-  const openAIKey = getOpenAIKey();
-  
-  if (!grokKey && !openAIKey) {
-    return { 
-      suggestions: [], 
-      error: 'Please add your Grok or OpenAI API key in the settings' 
-    };
-  }
-
   try {
-    // Try with Grok first if available
-    if (grokKey) {
-      try {
-        console.log("Generating suggestions with Grok API");
-        const grokResponse = await fetch(`${GROK_API_BASE_URL}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${grokKey}`,
-            'Content-Type': 'application/json',
+    console.log("Generating trip with OpenAI API using hardcoded key");
+    
+    const openAIResponse = await fetch(`${OPENAI_API_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a travel expert specializing in USA destinations. Generate trip suggestions in JSON format with the following structure: [{"destination": "string", "summary": "string", "duration": "string", "budget": number, "activities": string[]}]'
           },
-          body: JSON.stringify({
-            model: 'llama3-8b-8192',
-            messages: [
-              {
-                role: 'system',
-                content: 'You are a travel expert specializing in USA destinations. Generate trip suggestions in JSON format with the following structure: [{"destination": "string", "summary": "string", "duration": "string", "budget": number, "activities": string[]}]'
-              },
-              {
-                role: 'user',
-                content: `Generate 3 trip suggestions for a ${filters.mood} trip for ${filters.numberOfPeople} people interested in ${filters.placeType} with a budget of $${filters.budget}. Format as JSON.`
-              }
-            ],
-          }),
-        });
-
-        const grokData = await grokResponse.json();
-        
-        if (grokData.error) {
-          if (grokData.error.code === 'insufficient_quota') {
-            console.log("Grok API quota exceeded, falling back to OpenAI or mock data");
-            if (openAIKey) {
-              // Continue to OpenAI
-            } else {
-              return await getMockTripSuggestions(filters);
-            }
-          } else {
-            throw new Error(grokData.error.message || 'Grok API error');
+          {
+            role: 'user',
+            content: `Generate 3 trip suggestions for a ${filters.mood} trip for ${filters.numberOfPeople} people interested in ${filters.placeType} with a budget of $${filters.budget}. Format as JSON.`
           }
-        } else {
-          if (!grokData.choices?.[0]?.message?.content) {
-            throw new Error('Invalid response from Grok API');
-          }
+        ],
+      }),
+    });
 
-          const contentString = grokData.choices[0].message.content;
-          // Extract JSON from the response (in case it contains markdown or other text)
-          const jsonMatch = contentString.match(/```json\n([\s\S]*?)\n```/) || contentString.match(/```\n([\s\S]*?)\n```/) || [null, contentString];
-          const jsonString = jsonMatch[1] || contentString;
-          
-          const suggestions = JSON.parse(jsonString.trim());
-
-          // Add images to each suggestion using Pexels
-          const suggestionsWithImages = await Promise.all(
-            suggestions.map(async (suggestion: any) => {
-              const images = await getImagesForLocation(`${suggestion.destination} ${filters.placeType}`);
-              return { ...suggestion, images };
-            })
-          );
-
-          return { suggestions: suggestionsWithImages };
-        }
-      } catch (error: any) {
-        console.error('Error with Grok API:', error);
-        if (openAIKey) {
-          console.log('Falling back to OpenAI API');
-          // Continue to OpenAI below
-        } else {
-          return await getMockTripSuggestions(filters);
-        }
+    const openAIData = await openAIResponse.json();
+    
+    if (openAIData.error) {
+      if (openAIData.error.code === 'insufficient_quota') {
+        console.log("API quota exceeded, using mock data instead");
+        return await getMockTripSuggestions(filters);
       }
+      throw new Error(openAIData.error.message || 'OpenAI API error');
     }
 
-    // If Grok wasn't used or failed, try OpenAI
-    if (openAIKey) {
-      try {
-        console.log("Generating trip with OpenAI API");
-        
-        const openAIResponse = await fetch(`${OPENAI_API_BASE_URL}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${openAIKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
-            messages: [
-              {
-                role: 'system',
-                content: 'You are a travel expert specializing in USA destinations. Generate trip suggestions in JSON format with the following structure: [{"destination": "string", "summary": "string", "duration": "string", "budget": number, "activities": string[]}]'
-              },
-              {
-                role: 'user',
-                content: `Generate 3 trip suggestions for a ${filters.mood} trip for ${filters.numberOfPeople} people interested in ${filters.placeType} with a budget of $${filters.budget}. Format as JSON.`
-              }
-            ],
-          }),
-        });
-
-        const openAIData = await openAIResponse.json();
-        
-        if (openAIData.error) {
-          if (openAIData.error.code === 'insufficient_quota') {
-            console.log("API quota exceeded, using mock data instead");
-            return await getMockTripSuggestions(filters);
-          }
-          throw new Error(openAIData.error.message || 'OpenAI API error');
-        }
-
-        if (!openAIData.choices?.[0]?.message?.content) {
-          throw new Error('Invalid response from OpenAI API');
-        }
-
-        const suggestions = JSON.parse(openAIData.choices[0].message.content);
-
-        // Add images to each suggestion using Pexels
-        const suggestionsWithImages = await Promise.all(
-          suggestions.map(async (suggestion: any) => {
-            const images = await getImagesForLocation(`${suggestion.destination} ${filters.placeType}`);
-            return { ...suggestion, images };
-          })
-        );
-
-        return { suggestions: suggestionsWithImages };
-      } catch (error: any) {
-        console.error('Error:', error);
-        
-        // If there's a network error or parsing error, use mock data
-        if (error.message?.includes('quota') || error.message?.includes('rate limit') || error.message?.includes('exceeded')) {
-          console.log("API error related to quota, using mock data instead");
-          return await getMockTripSuggestions(filters);
-        }
-        
-        return { 
-          suggestions: [], 
-          error: error.message || 'Failed to generate trip suggestions. Please check your API keys.' 
-        };
-      }
-    } else {
-      return await getMockTripSuggestions(filters);
+    if (!openAIData.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response from OpenAI API');
     }
+
+    const suggestions = JSON.parse(openAIData.choices[0].message.content);
+
+    // Add images to each suggestion using Pexels
+    const suggestionsWithImages = await Promise.all(
+      suggestions.map(async (suggestion: any) => {
+        const images = await getImagesForLocation(`${suggestion.destination} ${filters.placeType}`);
+        return { ...suggestion, images };
+      })
+    );
+
+    return { suggestions: suggestionsWithImages };
   } catch (error: any) {
     console.error('Error:', error);
     
@@ -287,209 +183,13 @@ export async function generateTripSuggestions(filters: {
 }
 
 export async function generateCustomTrip(prompt: string): Promise<TripResponse> {
-  const grokKey = getGrokKey();
-  const deepSeekKey = getDeepSeekKey();
-  const openAIKey = getOpenAIKey();
-  
-  if (!grokKey && !deepSeekKey && !openAIKey) {
-    return { 
-      suggestions: [], 
-      error: 'Please add your Grok, DeepSeek or OpenAI API key in the settings' 
-    };
-  }
-  
   try {
-    // Try Grok first if the key is available
-    if (grokKey) {
-      return await generateCustomTripWithGrok(prompt);
-    } else if (deepSeekKey) {
-      return await generateCustomTripWithDeepSeek(prompt);
-    } else if (openAIKey) {
-      return await generateCustomTripWithOpenAI(prompt);
-    } else {
-      throw new Error('No API key available');
-    }
-  } catch (error: any) {
-    console.error('Error generating custom trip:', error);
-    return { 
-      suggestions: [], 
-      error: error.message || 'Failed to generate custom trip plan. Please check your API keys.' 
-    };
-  }
-}
-
-async function generateCustomTripWithGrok(prompt: string): Promise<TripResponse> {
-  const grokKey = getGrokKey();
-  
-  try {
-    console.log("Generating trip with Grok API");
-    
-    const grokResponse = await fetch(`${GROK_API_BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${grokKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'llama3-8b-8192',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a travel expert specializing in USA destinations. Generate a detailed trip plan in JSON format. Include the following fields:
-            {
-              "destination": "Full name of the destination",
-              "summary": "A brief summary of the trip (2-3 sentences)",
-              "duration": "Recommended duration (e.g., 5 days)",
-              "budget": numeric value in USD without dollar sign or commas (e.g. 1500),
-              "activities": ["List of 5-7 activity recommendations"],
-              "itinerary": [
-                {
-                  "day": 1,
-                  "title": "Title for day 1",
-                  "description": "Detailed plan for day 1 (2-3 sentences)",
-                  "activities": ["Morning activity", "Afternoon activity", "Evening activity"],
-                  "accommodation": "Recommended place to stay"
-                },
-                // more days following the same structure
-              ],
-              "travelTips": ["List of 3-5 helpful travel tips"]
-            }
-            
-            Make sure your response contains ONLY the JSON object with no additional text. The JSON must be valid and parseable.`
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-      }),
-    });
-
-    const grokData = await grokResponse.json();
-    
-    if (grokData.error) {
-      throw new Error(grokData.error.message || 'Grok API error');
-    }
-
-    if (!grokData.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from Grok API');
-    }
-
-    const contentString = grokData.choices[0].message.content;
-    // Extract JSON from the response (in case it contains markdown or other text)
-    const jsonMatch = contentString.match(/```json\n([\s\S]*?)\n```/) || contentString.match(/```\n([\s\S]*?)\n```/) || [null, contentString];
-    const jsonString = jsonMatch[1] || contentString;
-    
-    const tripPlan = JSON.parse(jsonString.trim());
-
-    // Add images using Pexels
-    const images = await getImagesForLocation(tripPlan.destination);
-    const suggestionWithImages = { ...tripPlan, images };
-
-    return { suggestions: [suggestionWithImages] };
-  } catch (error: any) {
-    console.error('Error with Grok API:', error);
-    if (getDeepSeekKey()) {
-      console.log('Falling back to DeepSeek API');
-      return generateCustomTripWithDeepSeek(prompt);
-    } else if (getOpenAIKey()) {
-      console.log('Falling back to OpenAI API');
-      return generateCustomTripWithOpenAI(prompt);
-    }
-    throw error;
-  }
-}
-
-async function generateCustomTripWithDeepSeek(prompt: string): Promise<TripResponse> {
-  const deepSeekKey = getDeepSeekKey();
-  
-  try {
-    console.log("Generating trip with DeepSeek API");
-    
-    const deepSeekResponse = await fetch(`${DEEPSEEK_API_BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${deepSeekKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a travel expert specializing in USA destinations. Generate a detailed trip plan in JSON format. Include the following fields:
-            {
-              "destination": "Full name of the destination",
-              "summary": "A brief summary of the trip (2-3 sentences)",
-              "duration": "Recommended duration (e.g., 5 days)",
-              "budget": numeric value in USD without dollar sign or commas (e.g. 1500),
-              "activities": ["List of 5-7 activity recommendations"],
-              "itinerary": [
-                {
-                  "day": 1,
-                  "title": "Title for day 1",
-                  "description": "Detailed plan for day 1 (2-3 sentences)",
-                  "activities": ["Morning activity", "Afternoon activity", "Evening activity"],
-                  "accommodation": "Recommended place to stay"
-                },
-                // more days following the same structure
-              ],
-              "travelTips": ["List of 3-5 helpful travel tips"]
-            }
-            
-            Make sure your response contains ONLY the JSON object with no additional text. The JSON must be valid and parseable.`
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-      }),
-    });
-
-    const deepSeekData = await deepSeekResponse.json();
-    
-    if (deepSeekData.error) {
-      throw new Error(deepSeekData.error.message || 'DeepSeek API error');
-    }
-
-    if (!deepSeekData.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from DeepSeek API');
-    }
-
-    const contentString = deepSeekData.choices[0].message.content;
-    // Extract JSON from the response (in case it contains markdown or other text)
-    const jsonMatch = contentString.match(/```json\n([\s\S]*?)\n```/) || contentString.match(/```\n([\s\S]*?)\n```/) || [null, contentString];
-    const jsonString = jsonMatch[1] || contentString;
-    
-    const tripPlan = JSON.parse(jsonString.trim());
-
-    // Add images using Pexels
-    const images = await getImagesForLocation(tripPlan.destination);
-    const suggestionWithImages = { ...tripPlan, images };
-
-    return { suggestions: [suggestionWithImages] };
-  } catch (error: any) {
-    console.error('Error with DeepSeek API:', error);
-    if (getOpenAIKey()) {
-      console.log('Falling back to OpenAI API');
-      return generateCustomTripWithOpenAI(prompt);
-    }
-    throw error;
-  }
-}
-
-async function generateCustomTripWithOpenAI(prompt: string): Promise<TripResponse> {
-  const openAIKey = getOpenAIKey();
-  
-  try {
-    console.log("Generating trip with OpenAI API");
+    console.log("Generating trip with OpenAI API using hardcoded key");
     
     const openAIResponse = await fetch(`${OPENAI_API_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIKey}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
